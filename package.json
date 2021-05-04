@@ -1,0 +1,33 @@
+{
+  "name": "@sparted/check-changelog-action",
+  "version": "1.0.0",
+  "description": "A github action which check if the changelog has been modified",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf dist",
+    "build": "tsc --outDir dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.7",
+    "@actions/github": "^4.0.0",
+    "changelog-parser": "^2.8.0"
+  },
+  "devDependencies": {
+    "@octokit/webhooks": "^9.3.0",
+    "@sparted/eslint-plugin": "^1.0.0",
+    "@types/changelog-parser": "^2.7.1",
+    "@types/node": "^15.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "eslint": "^7.25.0",
+    "typescript": "^4.2.4"
+  }
+}
