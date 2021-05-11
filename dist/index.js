@@ -33,7 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
-const github_1 = __importDefault(require("@actions/github"));
+const github = __importStar(require("@actions/github"));
 const changelog_parser_1 = __importDefault(require("changelog-parser"));
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
 const getChangelog = (octokit, branchReference, repo) => __awaiter(void 0, void 0, void 0, function* () {
@@ -58,7 +58,7 @@ function run() {
         const repo = core.getInput('repo');
         const githubBaseReference = core.getInput('github-base-ref');
         const githubHeadReference = core.getInput('github-head-ref');
-        const octokit = github_1.default.getOctokit(token);
+        const octokit = github.getOctokit(token);
         try {
             const [oldChangelog, currentChangelog] = yield Promise.all([
                 getChangelog(octokit, githubBaseReference, repo),

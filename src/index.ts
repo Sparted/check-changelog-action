@@ -1,7 +1,7 @@
 /* eslint-disable @sparted/import/no-unused-modules -- entry point file */
 
 import * as core from '@actions/core';
-import github from '@actions/github';
+import * as github from '@actions/github';
 import parseChangelog from 'changelog-parser';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
