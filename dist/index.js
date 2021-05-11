@@ -38,14 +38,12 @@ const changelog_parser_1 = __importDefault(require("changelog-parser"));
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
 const getChangelog = (octokit, branchReference, repo) => __awaiter(void 0, void 0, void 0, function* () {
     /* eslint-enable @typescript-eslint/no-explicit-any */
-    core.info(`branch ref = ${branchReference}`);
     const changelog = yield octokit.repos.getContent({
         owner: 'Sparted',
         repo,
         path: 'CHANGELOG.md',
         ref: branchReference,
     });
-    core.info('On arrive la');
     const contentChangelog = 'content' in changelog.data
         ? changelog.data.content
         : '';
@@ -58,18 +56,14 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput('github-token');
         const repo = core.getInput('repo');
-        const githubBaseReference = core.getInput('github-base-ref');
-        const githubHeadReference = core.getInput('github-head-ref');
-        core.info(`githubBaseReference = ${githubBaseReference}`);
-        core.info(`githubHeadReference = ${githubHeadReference}`);
-        core.info(`With env = ${process.env.GITHUB_HEAD_REF}`);
+        const githubBaseReference = process.env.GITHUB_BASE_REF;
+        const githubHeadReference = process.env.GITHUB_HEAD_REF;
         const octokit = github.getOctokit(token);
         try {
             const [oldChangelog, currentChangelog] = yield Promise.all([
                 getChangelog(octokit, githubBaseReference, repo),
                 getChangelog(octokit, githubHeadReference, repo),
             ]);
-            core.info('On arrive la2');
             const version = currentChangelog.versions[0].version;
             if (oldChangelog.versions[0].version !== version) {
                 core.info(`New version added: ${version}`);

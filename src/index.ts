@@ -5,10 +5,8 @@ import * as github from '@actions/github';
 import parseChangelog from 'changelog-parser';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-const getChangelog = async (octokit: any, branchReference: string, repo: string): Promise<any> => {
+const getChangelog = async (octokit: any, branchReference: string | undefined, repo: string): Promise<any> => {
   /* eslint-enable @typescript-eslint/no-explicit-any */
-
-  core.info(`branch ref = ${branchReference}`);
 
   const changelog = await octokit.repos.getContent({
     owner: 'Sparted',
@@ -16,8 +14,6 @@ const getChangelog = async (octokit: any, branchReference: string, repo: string)
     path: 'CHANGELOG.md',
     ref: branchReference,
   });
-
-  core.info('On arrive la');
 
   const contentChangelog = 'content' in changelog.data
     ? changelog.data.content
@@ -35,13 +31,8 @@ const getChangelog = async (octokit: any, branchReference: string, repo: string)
 async function run() {
   const token = core.getInput('github-token');
   const repo = core.getInput('repo');
-  const githubBaseReference = core.getInput('github-base-ref');
-  const githubHeadReference = core.getInput('github-head-ref');
-
-  core.info(`githubBaseReference = ${githubBaseReference}`);
-  core.info(`githubHeadReference = ${githubHeadReference}`);
-  core.info(`With env = ${process.env.GITHUB_HEAD_REF}`)
-
+  const githubBaseReference = process.env.GITHUB_BASE_REF;
+  const githubHeadReference = process.env.GITHUB_HEAD_REF;
 
   const octokit = github.getOctokit(token);
 
@@ -50,8 +41,6 @@ async function run() {
       getChangelog(octokit, githubBaseReference, repo),
       getChangelog(octokit, githubHeadReference, repo),
     ]);
-
-    core.info('On arrive la2');
 
     const version = currentChangelog.versions[0].version;
 

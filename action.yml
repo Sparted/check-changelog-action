@@ -7,12 +7,6 @@ inputs:
   repo:
     description: 'Repository name'
     required: true
-  github-base-ref:
-    description: 'Github Base Ref'
-    required: true
-  github-head-ref:
-    description: 'Github Head Ref'
-    required: true
 runs:
   using: 'node12'
   main: './dist/index.js'
