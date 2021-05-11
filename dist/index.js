@@ -62,6 +62,7 @@ function run() {
         const githubHeadReference = core.getInput('github-head-ref');
         core.info(`githubBaseReference = ${githubBaseReference}`);
         core.info(`githubHeadReference = ${githubHeadReference}`);
+        core.info(`With env = ${process.env.GITHUB_HEAD_REF}`);
         const octokit = github.getOctokit(token);
         try {
             const [oldChangelog, currentChangelog] = yield Promise.all([
