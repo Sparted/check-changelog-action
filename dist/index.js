@@ -38,12 +38,14 @@ const changelog_parser_1 = __importDefault(require("changelog-parser"));
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
 const getChangelog = (octokit, branchReference, repo) => __awaiter(void 0, void 0, void 0, function* () {
     /* eslint-enable @typescript-eslint/no-explicit-any */
+    core.info(`branch ref = ${branchReference}`);
     const changelog = yield octokit.repos.getContent({
         owner: 'Sparted',
         repo,
         path: 'CHANGELOG.md',
         ref: branchReference,
     });
+    core.info('On arrive la');
     const contentChangelog = 'content' in changelog.data
         ? changelog.data.content
         : '';
@@ -64,6 +66,7 @@ function run() {
                 getChangelog(octokit, githubBaseReference, repo),
                 getChangelog(octokit, githubHeadReference, repo),
             ]);
+            core.info('On arrive la2');
             const version = currentChangelog.versions[0].version;
             if (oldChangelog.versions[0].version !== version) {
                 core.info(`New version added: ${version}`);

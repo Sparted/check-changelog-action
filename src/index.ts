@@ -8,12 +8,16 @@ import parseChangelog from 'changelog-parser';
 const getChangelog = async (octokit: any, branchReference: string, repo: string): Promise<any> => {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
+  core.info(`branch ref = ${branchReference}`);
+
   const changelog = await octokit.repos.getContent({
     owner: 'Sparted',
     repo,
     path: 'CHANGELOG.md',
     ref: branchReference,
   });
+
+  core.info('On arrive la');
 
   const contentChangelog = 'content' in changelog.data
     ? changelog.data.content
@@ -41,6 +45,8 @@ async function run() {
       getChangelog(octokit, githubBaseReference, repo),
       getChangelog(octokit, githubHeadReference, repo),
     ]);
+
+    core.info('On arrive la2');
 
     const version = currentChangelog.versions[0].version;
 
