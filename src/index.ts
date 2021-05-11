@@ -4,48 +4,55 @@ import * as core from '@actions/core';
 import github from '@actions/github';
 import parseChangelog from 'changelog-parser';
 
+/* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
+const getChangelog = async (token: string, branchReference: string, repo: string): Promise<any> => {
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
+  const octokit = github.getOctokit(token);
+  const changelog = await octokit.repos.getContent({
+    owner: 'Sparted',
+    repo,
+    path: 'CHANGELOG.md',
+    ref: branchReference,
+  });
+
+  const contentChangelog = 'content' in changelog.data
+    ? changelog.data.content
+    : '';
+
+  const text = Buffer.from(contentChangelog, 'base64').toString('utf-8');
+
+  /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
+
+  return parseChangelog({ text } as any);
+
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+};
 
 async function run() {
+  const token = core.getInput('github-token');
+  const repo = core.getInput('repo');
+  const githubBaseReference = core.getInput('github-base-ref');
+  const githubHeadReference = core.getInput('github-head-ref');
+
   try {
-    const token = core.getInput('github-token');
-    const repo = core.getInput('repo');
-    const githubBaseReference = core.getInput('github-base-ref');
-    const githubHeadReference = core.getInput('github-head-ref');
+    const [oldChangelog, currentChangelog] = await Promise.all([
+      getChangelog(token, githubBaseReference, repo),
+      getChangelog(token, githubHeadReference, repo),
+    ]);
 
-    const octokit = github.getOctokit(token);
+    const version = currentChangelog.versions[0].version;
 
-    const oldChangelog = await octokit.repos.getContent({
-      owner: 'Sparted',
-      repo,
-      path: 'CHANGELOG.md',
-      ref: githubBaseReference,
-    });
-    const currentChangelog = await octokit.repos.getContent({
-      owner: 'Sparted',
-      repo,
-      path: 'CHANGELOG.md',
-      ref: githubHeadReference,
-    });
+    if (oldChangelog.versions[0].version !== version) {
+      core.info(`New version added: ${version}`);
 
-    const contentOldChangelog = 'content' in oldChangelog.data
-      ? oldChangelog.data.content
-      : '';
-    const contentCurrentChangelog = 'content' in currentChangelog.data
-      ? currentChangelog.data.content
-      : '';
+      return;
+    }
 
-    const oldChangelogText = Buffer.from(contentOldChangelog, 'base64').toString('utf-8');
-    const currentChangelogText = Buffer.from(contentCurrentChangelog, 'base64').toString('utf-8');
+    if (currentChangelog.versions[0].parsed._.length <= oldChangelog.versions[0].parsed._.length)
+      throw new Error(`No new line added in CHANGELOG for version ${version}`);
 
-    /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-
-    const parsedOldChangelog: any = await parseChangelog({ text: oldChangelogText } as any);
-    const parsedCurrentChangelog: any = await parseChangelog({ text: currentChangelogText } as any);
-
-    /* eslint-enable @typescript-eslint/no-explicit-any */
-
-    if (parsedOldChangelog.versions[0].parsed._.length >= parsedCurrentChangelog.versions[0].parsed._.length)
-      throw new Error('No new line added in CHANGELOG');
+    core.info(`New line correctly added in CHANGELOG for version ${version}`);
   } catch (error) {
     core.setFailed(error.message);
   }
