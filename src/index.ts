@@ -5,10 +5,9 @@ import github from '@actions/github';
 import parseChangelog from 'changelog-parser';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-const getChangelog = async (token: string, branchReference: string, repo: string): Promise<any> => {
+const getChangelog = async (octokit: any, branchReference: string, repo: string): Promise<any> => {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
-  const octokit = github.getOctokit(token);
   const changelog = await octokit.repos.getContent({
     owner: 'Sparted',
     repo,
@@ -35,10 +34,12 @@ async function run() {
   const githubBaseReference = core.getInput('github-base-ref');
   const githubHeadReference = core.getInput('github-head-ref');
 
+  const octokit = github.getOctokit(token);
+
   try {
     const [oldChangelog, currentChangelog] = await Promise.all([
-      getChangelog(token, githubBaseReference, repo),
-      getChangelog(token, githubHeadReference, repo),
+      getChangelog(octokit, githubBaseReference, repo),
+      getChangelog(octokit, githubHeadReference, repo),
     ]);
 
     const version = currentChangelog.versions[0].version;
