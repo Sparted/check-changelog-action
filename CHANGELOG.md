@@ -1,3 +1,7 @@
+1.0.3
+-----
+- Fix import actions/github
+
 1.0.2
 -----
 - Add more log in action
