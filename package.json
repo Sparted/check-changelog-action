@@ -1,6 +1,6 @@
 {
   "name": "@sparted/check-changelog-action",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A github action which check if the changelog has been modified",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

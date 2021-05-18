@@ -1,3 +1,7 @@
+1.0.4
+-----
+- input repo and token are set by default
+
 1.0.3
 -----
 - Fix import actions/github

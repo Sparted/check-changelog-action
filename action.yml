@@ -3,10 +3,10 @@ description: 'Check if the Changelog has been correctly modified'
 inputs:
   github-token:
     description: 'Github Token'
-    required: true
+    default: ${{ github.token }}
   repo:
     description: 'Repository name'
-    required: true
+    default: ${{ github.repository }}
 runs:
   using: 'node12'
   main: './dist/index.js'
