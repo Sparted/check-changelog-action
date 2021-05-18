@@ -36,10 +36,11 @@ const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 const changelog_parser_1 = __importDefault(require("changelog-parser"));
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-const getChangelog = (octokit, branchReference, repo) => __awaiter(void 0, void 0, void 0, function* () {
+const getChangelog = (octokit, branchReference, repoName) => __awaiter(void 0, void 0, void 0, function* () {
     /* eslint-enable @typescript-eslint/no-explicit-any */
+    const [owner, repo] = repoName.split('/');
     const changelog = yield octokit.repos.getContent({
-        owner: 'Sparted',
+        owner,
         repo,
         path: 'CHANGELOG.md',
         ref: branchReference,

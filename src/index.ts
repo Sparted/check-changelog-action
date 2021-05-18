@@ -5,11 +5,12 @@ import * as github from '@actions/github';
 import parseChangelog from 'changelog-parser';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-const getChangelog = async (octokit: any, branchReference: string | undefined, repo: string): Promise<any> => {
+const getChangelog = async (octokit: any, branchReference: string | undefined, repoName: string): Promise<any> => {
   /* eslint-enable @typescript-eslint/no-explicit-any */
+  const [owner, repo] = repoName.split('/');
 
   const changelog = await octokit.repos.getContent({
-    owner: 'Sparted',
+    owner,
     repo,
     path: 'CHANGELOG.md',
     ref: branchReference,
