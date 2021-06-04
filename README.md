@@ -6,7 +6,8 @@ A github action which check if the changelog has been modified
 
 ### `token`
 
-**Required** The github token
+The github token
+By default, take the github token provided by the user who triggered the action
 
 ### `repo`
 
@@ -17,7 +18,7 @@ By default, take the repository name where the action is executed
 
 - Make your change
 - Edit `package.json` and `README.md`
-- `yarn build`
+- `yarn build`g
 - Push or merge changes on master
 - Tag the version: `git tag -a -m "Name" v1.x.x`
 - Push tags: `git push --follow-tags`
