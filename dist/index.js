@@ -6825,6 +6825,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.wasLineAdded = exports.isNewVersion = exports.getChangelog = void 0;
+const core_1 = __nccwpck_require__(2186);
 const changelog_parser_1 = __importDefault(__nccwpck_require__(6352));
 const getChangelog = (octokit, branchReference, repoName) => __awaiter(void 0, void 0, void 0, function* () {
     const [owner, repo] = repoName.split('/');
@@ -6846,7 +6847,13 @@ const isNewVersion = (oldChangelog, newChangelog) => {
     return oldChangelog.versions[0].version !== version;
 };
 exports.isNewVersion = isNewVersion;
-const wasLineAdded = (oldChangelog, newChangelog) => newChangelog.versions[0].parsed._.length >= oldChangelog.versions[0].parsed._.length;
+const wasLineAdded = (oldChangelog, newChangelog) => {
+    (0, core_1.info)('Dump old changelog');
+    (0, core_1.info)(JSON.stringify(oldChangelog.versions[0]));
+    (0, core_1.info)('Dump new changelog');
+    (0, core_1.info)(JSON.stringify(newChangelog.versions[0]));
+    return newChangelog.versions[0].parsed._.length >= oldChangelog.versions[0].parsed._.length;
+};
 exports.wasLineAdded = wasLineAdded;
 
 

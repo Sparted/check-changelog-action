@@ -1,3 +1,4 @@
+import { info } from '@actions/core';
 import { getOctokit } from '@actions/github';
 import parseChangelog from 'changelog-parser';
 
@@ -41,4 +42,11 @@ export const isNewVersion = (
 export const wasLineAdded = (
   oldChangelog: Changelog,
   newChangelog: Changelog,
-): boolean => newChangelog.versions[0].parsed._.length >= oldChangelog.versions[0].parsed._.length;
+): boolean => {
+  info('Dump old changelog');
+  info(JSON.stringify(oldChangelog.versions[0]));
+  info('Dump new changelog');
+  info(JSON.stringify(newChangelog.versions[0]));
+
+  return newChangelog.versions[0].parsed._.length >= oldChangelog.versions[0].parsed._.length;
+};
