@@ -1,65 +1,40 @@
-/* eslint-disable @sparted/import/no-unused-modules -- entry point file */
+import { getInput, info, setFailed } from '@actions/core';
+import { getOctokit } from '@actions/github';
+import {
+  wasLineAdded,
+  isNewVersion,
+  getChangelog,
+} from './utils/changelog';
 
-import * as core from '@actions/core';
-import * as github from '@actions/github';
-import parseChangelog from 'changelog-parser';
-
-/* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-const getChangelog = async (octokit: any, branchReference: string | undefined, repoName: string): Promise<any> => {
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-  const [owner, repo] = repoName.split('/');
-
-  const changelog = await octokit.repos.getContent({
-    owner,
-    repo,
-    path: 'CHANGELOG.md',
-    ref: branchReference,
-  });
-
-  const contentChangelog = 'content' in changelog.data
-    ? changelog.data.content
-    : '';
-
-  const text = Buffer.from(contentChangelog, 'base64').toString('utf-8');
-
-  /* eslint-disable @typescript-eslint/no-explicit-any -- wrong types */
-
-  return parseChangelog({ text } as any);
-
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-};
-
-async function run() {
-  const token = core.getInput('github-token');
-  const repo = core.getInput('repo');
+const run = async (): Promise<void> => {
+  const token = getInput('github-token');
+  const repo = getInput('repo');
   const githubBaseReference = process.env.GITHUB_BASE_REF;
   const githubHeadReference = process.env.GITHUB_HEAD_REF;
 
-  const octokit = github.getOctokit(token);
+  const octokit = getOctokit(token);
 
-  try {
-    const [oldChangelog, currentChangelog] = await Promise.all([
-      getChangelog(octokit, githubBaseReference, repo),
-      getChangelog(octokit, githubHeadReference, repo),
-    ]);
+  const [oldChangelog, newChangelog] = await Promise.all([
+    getChangelog(octokit, githubBaseReference, repo),
+    getChangelog(octokit, githubHeadReference, repo),
+  ]);
 
-    const version = currentChangelog.versions[0].version;
+  const { version } = newChangelog.versions[0];
 
-    if (oldChangelog.versions[0].version !== version) {
-      core.info(`New version added: ${version}`);
-
-      return;
-    }
-
-    if (currentChangelog.versions[0].parsed._.length <= oldChangelog.versions[0].parsed._.length)
-      throw new Error(`No new line added in CHANGELOG for version ${version}`);
-
-    core.info(`New line correctly added in CHANGELOG for version ${version}`);
-  } catch (error) {
-    core.setFailed(error.message);
+  if (isNewVersion(oldChangelog, newChangelog)) {
+    return info(`New version added: ${version}`);
   }
+
+  if (wasLineAdded(oldChangelog, newChangelog)) {
+    return info(`New line correctly added in CHANGELOG for version ${version}`);
+  }
+
+  throw new Error(`No new line added in CHANGELOG for version ${version}`);
+};
+
+try {
+  run();
+} catch (error) {
+  const { message } = error as Error;
+  setFailed(message);
 }
-
-run();
-
-/* eslint-enable @sparted/import/no-unused-modules */
