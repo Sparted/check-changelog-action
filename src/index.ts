@@ -1,10 +1,7 @@
 import { getInput, info, setFailed } from '@actions/core';
+
 import { getOctokit } from '@actions/github';
-import {
-  wasLineAdded,
-  isNewVersion,
-  getChangelog,
-} from './utils/changelog';
+import { wasLineAdded, isNewVersion, getChangelog } from './utils/changelog';
 
 const run = async (): Promise<void> => {
   const token = getInput('github-token');
