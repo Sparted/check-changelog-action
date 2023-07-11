@@ -20,25 +20,18 @@ export const getChangelog = async (
     ref: branchReference,
   });
 
-  const contentChangelog = 'content' in changelog.data
-    ? changelog.data.content
-    : '';
+  const contentChangelog = 'content' in changelog.data ? changelog.data.content : '';
 
   const text = Buffer.from(contentChangelog, 'base64').toString('utf-8');
 
   return parseChangelog({ text });
 };
 
-export const isNewVersion = (
-  oldChangelog: Changelog,
-  newChangelog: Changelog,
-): boolean => {
+export const isNewVersion = (oldChangelog: Changelog, newChangelog: Changelog): boolean => {
   const { version } = newChangelog.versions[0];
 
   return oldChangelog.versions[0].version !== version;
 };
 
-export const wasLineAdded = (
-  oldChangelog: Changelog,
-  newChangelog: Changelog,
-): boolean => newChangelog.versions[0].parsed._.length >= oldChangelog.versions[0].parsed._.length;
+export const wasLineAdded = (oldChangelog: Changelog, newChangelog: Changelog): boolean =>
+  newChangelog.versions[0].parsed._.length >= oldChangelog.versions[0].parsed._.length;
